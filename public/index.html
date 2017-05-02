@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>WE LOVE COFFEE</title>
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css">
+	<link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+ 	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js"></script>
+  <script src="angular.min.js"></script>
+  <script src="angular-resource.min.js"></script>
+
+</head>
+<body ng-app="AssApp">
+	 <div class="row" ng-controller="MainController">
+      <div class="col s2"></div>
+
+      <div class="col s8">
+        <div class="card" >
+          <div class="card-content">
+                <h1>Hello Coffee</h1>
+              <div class="row">
+                  <div class="col s12">
+                      <ul class="tabs" >
+                      	<li class="tab col s4"><a class="active" href="#menu" >Step 1 : Menu</a></li>
+                  		  <li class="tab col s4"><a class="active" href="#cal">Step 2 : Calculate</a></li>
+                        <li class="tab col s4"><a class="active" href="#about">Step 3 : About us</a></li> 
+                      </ul>
+                  </div>
+
+                  <div id="menu">
+                    <div class="row">
+                      <form action="" method="get" accept-charset="utf-8">
+                        <div class="input-field col s4" ng-repeat="project in projects" ng-if="!isEmpty(project)">
+                          <img src= "{{project.url}}" style="width:350px;height:228px;">
+                          <button type="button" class="waves-effect waves-light btn"  ng-click="add(project.id)">Selete</button>
+                        </div><br><br>    
+                      </form>
+                    </div>
+                  </div>
+
+
+
+                  <div id="cal">
+                    <table>
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th>Name</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+
+                      <tbody >
+                        <tr ng-repeat="project in projects2" ng-if="!isEmpty(project)">
+                          <td></td>
+                          <td>{{ project.name }}</td>
+                          <td>{{ project.price }}</td>
+                          </tr>
+                      </tbody>
+
+                      <thead>
+                        <tr>
+                          <th></th>
+                          <th></th>
+                          <th>Total</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td>{{ getTotal() }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                <div id="about">
+                <br><br><br><br>
+                      <div class="card">
+                        <div class="col s6">
+                            <div class="card horizontal">
+                              <div class="card-image">
+                                <img src="images/oil.jpg">
+                              </div>
+                              <div class="card-stacked">
+                                <div class="card-content">
+                                  <p>MR.THANAKORN KONGNAKORN : 5635512048</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col s6 ">
+                            <div class="card horizontal">
+                              <div class="card-image">
+                                <img src="images/bb.jpg">
+                              </div>
+                              <div class="card-stacked">
+                                <div class="card-content">
+                                  <p>MR.RONNAKORN SAECHANG : 5635512076</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="col s6">
+                            <div class="card horizontal">
+                              <div class="card-image">
+                                <img src="images/prae.jpg">
+                              </div>
+                              <div class="card-stacked">
+                                <div class="card-content">
+                                  <p>MISS WANWIMON SURAPAN : 5635512097</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          <div class="col s6">
+                            <div class="card horizontal">
+                              <div class="card-image">
+                                <img src="images/lam2.jpg" >
+                              </div>
+                              <div class="card-stacked">
+                                <div class="card-content">
+                                  <p>MISS TANKUN PANKEAW : 5635512130</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+
+                          </div>
+                </div>
+
+
+
+          </div>
+        </div>
+      </div>
+
+
+      <div class="col s2"></div>
+
+  </div>
+</body>
+<script>
+
+  var myApp = angular.module('AssApp', ['ngResource']);
+  myApp.controller('MainController', function($scope,$resource) {
+    var Project = $resource('/api/projects/:project_id',{'project_id' : '@id'},
+    {
+      'delete' : { 'method' :'delete' },
+      update : { method : 'PUT'}
+    })
+
+    var Project2 = $resource('/api/projects2/:project_id',{'project_id' : '@id'},
+    {
+      'delete' : { 'method' :'delete' },
+      update : { method : 'PUT'}
+    })
+
+    $scope.projects = Project.query()  // reload data
+    $scope.projects2 = Project2.query()
+    $scope.Editproject = {} 
+
+    $scope.add = function(id){
+      Project.save({ project_id: id },
+      {
+        message : $scope.Editproject.message,
+        likes: $scope.Editproject.likes,
+        share : $scope.Editproject.share
+      })
+      $scope.projects2 = Project2.query()
+    }
+
+    $scope.delete = function(id){
+      Project.delete({'project_id' : id})
+      $scope.projects2 = Project2.query()
+    }
+
+    $scope.getTotal = function(){
+      var total = 0;
+      for(var i = 0; i < $scope.projects2.length; i++){
+          var product = $scope.projects2[i];  
+          total += product.price;
+          console.log(product.price)
+      }
+      return total;
+    }
+
+    $scope.isEmpty = function(item){
+      return Object.keys(item).length == 1
+    }
+
+
+  });
+
+</script>				
+</html>
